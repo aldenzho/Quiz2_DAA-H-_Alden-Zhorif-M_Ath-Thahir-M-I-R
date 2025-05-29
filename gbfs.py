@@ -16,4 +16,4 @@ def gbfs(graph, start, goal, positions):
             for neighbor, _ in graph.get(current, []):
                 if neighbor not in visited:
                     heapq.heappush(frontier, (heuristic(positions[neighbor], positions[goal]), neighbor, path + [neighbor]))
-    return []
+    return[]

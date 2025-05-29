@@ -1,12 +1,12 @@
 import time
 from bfs import bfs
-from dag import topological_sort
-import prim
-from astar import astar
-from kruskal import kruskal
 from dfs import dfs
+from dag import topological_sort
+from astar import astar
 from dijkstra import dijkstra
 from gbfs import gbfs
+from kruskal import kruskal
+import prim
 
 def input_unweighted_graph():
     graph = {}
@@ -57,25 +57,16 @@ def run_unweighted():
     path_dfs = dfs(graph, start_node, goal_node)
     dfs_time = time.time() - start
 
-    # Topological Sort
-    start = time.time()
-    topo_order = topological_sort(graph)
-    topo_time = time.time() - start
-
     # Output
     print("\n--- Result for Unweighted Graph ---")
     print(f"BFS Path {start_node} -> {goal_node}: {path_bfs} (time: {bfs_time:.6f}s)")
     print(f"DFS Path {start_node} -> {goal_node}: {path_dfs} (time: {dfs_time:.6f}s)")
-    print(f"Topological Sort Order: {topo_order} (time: {topo_time:.6f}s)")
 
 def run_weighted():
     print("\n=== Input Weighted Graph ===")
     graph, edges = input_weighted_graph()
-
-    # Input posisi node (untuk A* dan GBFS)
     positions = input_node_positions(graph.keys())
 
-    # Input titik awal/tujuan
     prim_start = input("Start node for Prim: ")
     astar_start = input("Start node for A*: ")
     astar_goal = input("Goal node for A*: ")
@@ -118,82 +109,78 @@ def run_weighted():
     print(f"Dijkstra Path {dijkstra_start} -> {dijkstra_goal}: {path_dijkstra} (cost: {cost_dijkstra}, time: {dijkstra_time:.6f}s)")
     print(f"GBFS Path {gbfs_start} -> {gbfs_goal}: {path_gbfs} (time: {gbfs_time:.6f}s)")
 
+def run_dag():
+    print("\n=== Input Directed Acyclic Graph (DAG) ===")
+    graph = input_unweighted_graph()
+
+    start = time.time()
+    try:
+        topo_order = topological_sort(graph)
+        elapsed = time.time() - start
+        print(f"\n--- Topological Sort Result ---")
+        print(f"Topological Order: {topo_order} (time: {elapsed:.6f}s)")
+    except ValueError as e:
+        elapsed = time.time() - start
+        print(f"\nTopological Sort failed: {e} (time: {elapsed:.6f}s)")
+
 def main():
     print("=== Graph Algorithm Comparison ===")
-    print("1. Unweighted Graph (BFS, DFS, Topological Sort)")
+    print("1. Unweighted Graph (BFS, DFS)")
     print("2. Weighted Graph (Prim, Kruskal, A*, Dijkstra, GBFS)")
-    choice = input("Choose graph type [1/2]: ")
+    print("3. DAG (Topological Sort Only)")
+    choice = input("Choose graph type [1/2/3]: ")
 
     if choice == '1':
         run_unweighted()
     elif choice == '2':
         run_weighted()
+    elif choice == '3':
+        run_dag()
     else:
-        print("Invalid choice. Please enter 1 or 2.")
+        print("Invalid choice. Please enter 1, 2, or 3.")
 
 if __name__ == "__main__":
     main()
 
-'''
-==================OPSI TAMBAHAN FITUR=========================
 
-# visualiassi MST
-print("\n=== Input Weighted Graph for MST (Prim & Kruskal) ===")
-weighted_graph, edges = input_weighted_graph()
-prim_start = input("Start node for Prim's algorithm: ")
 
-start = time.time()
-mst_prim = prim.prim(weighted_graph, prim_start)  # panggil fungsi prim dari modul prim
-end = time.time()
-
-total_cost_prim = sum(w for _, _, w in mst_prim)
-
-print("Prim-Jarnik MST edges and weights:")
-for u, v, w in mst_prim:
-    print(f"{u} - {v}: {w}")
-print(f"Total cost: {total_cost_prim}, time: {end - start:.6f} seconds")
-
-positions = prim.input_positions_and_visualize(weighted_graph.keys(), mst_prim)
 
 '''
-
-'''
-=== Input Unweighted Graph for BFS and DAG ===
-Number of nodes (unweighted graph): 6
+=== Input Unweighted Graph for BFS DFS ===
+=== Input Unweighted Graph ===
+Number of nodes (unweighted graph): 5
 Node name: A
-Neighbors of A (comma-separated): B,C
+Neighbors of A (comma-separated): B, C
 Node name: B
-Neighbors of B (comma-separated): D
+Neighbors of B (comma-separated): A, D
 Node name: C
-Neighbors of C (comma-separated): D,E
+Neighbors of C (comma-separated): A, D
 Node name: D
-Neighbors of D (comma-separated): F
+Neighbors of D (comma-separated): B, C, E
 Node name: E
-Neighbors of E (comma-separated): F
-Node name: F
-Neighbors of F (comma-separated): 
-Start node for BFS: A
-Goal node for BFS: F
+Neighbors of E (comma-separated): D
+Start node for BFS/DFS: A
+Goal node for BFS/DFS: E
  
 
 '''
+'''
+=== Input Unweighted Graph for DAG ===
+Number of nodes (unweighted graph): 5
+Node name: A
+Neighbors of A (comma-separated): B,D
+Node name: B
+Neighbors of B (comma-separated): C
+Node name: C
+Neighbors of C (comma-separated):
+Node name: D
+Neighbors of D (comma-separated): E
+Node name: E
+Neighbors of E (comma-separated):
 
 '''
-=== Input Weighted Graph for MST (Prim & Kruskal) ===
-Number of edges (weighted graph): 7
-Edge (format: node1 node2 weight): A B 4
-Edge (format: node1 node2 weight): A C 3
-Edge (format: node1 node2 weight): B D 5
-Edge (format: node1 node2 weight): C D 6
-Edge (format: node1 node2 weight): C E 2
-Edge (format: node1 node2 weight): D F 1
-Edge (format: node1 node2 weight): E F 4
-Start node for Prim's algorithm: A
-
-'''
-
 ''' 
-==============input for Astar===============
+
 
 === Input Weighted Graph for MST (Prim & Kruskal) ===
 Number of edges (weighted graph): 5
@@ -205,7 +192,7 @@ Edge (format: node1 node2 weight): D E 1
 
 Start node for Prim's algorithm: A
 
-=== A* Search ===
+===  input for A* ===
 Start node for A*: A
 Goal node for A*: E
 Enter positions for each node (format: x y):

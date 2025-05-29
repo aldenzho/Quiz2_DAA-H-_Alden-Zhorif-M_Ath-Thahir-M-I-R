@@ -11,4 +11,4 @@ def dfs(graph, start, goal):
             for neighbor in reversed(graph.get(node, [])):
                 if neighbor not in visited:
                     stack.append((neighbor, path + [neighbor]))
-    return []
+    return[]
