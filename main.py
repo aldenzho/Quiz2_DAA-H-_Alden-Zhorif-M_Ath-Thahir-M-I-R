@@ -1,9 +1,12 @@
 import time
 from bfs import bfs
 from dag import topological_sort
-import prim  
+import prim
 from astar import astar
 from kruskal import kruskal
+from dfs import dfs
+from dijkstra import dijkstra
+from gbfs import gbfs
 
 def input_unweighted_graph():
     graph = {}
@@ -41,63 +44,84 @@ def input_node_positions(nodes):
 def run_unweighted():
     print("\n=== Input Unweighted Graph ===")
     graph = input_unweighted_graph()
-    start_node = input("Start node for BFS: ")
-    goal_node = input("Goal node for BFS: ")
+    start_node = input("Start node for BFS/DFS: ")
+    goal_node = input("Goal node for BFS/DFS: ")
 
-    # Run BFS
+    # BFS
     start = time.time()
-    bfs_path = bfs(graph, start_node, goal_node)
+    path_bfs = bfs(graph, start_node, goal_node)
     bfs_time = time.time() - start
 
-    # Run Topological Sort
+    # DFS
+    start = time.time()
+    path_dfs = dfs(graph, start_node, goal_node)
+    dfs_time = time.time() - start
+
+    # Topological Sort
     start = time.time()
     topo_order = topological_sort(graph)
     topo_time = time.time() - start
 
     # Output
     print("\n--- Result for Unweighted Graph ---")
-    print(f"BFS Path {start_node} -> {goal_node}: {bfs_path} (time: {bfs_time:.6f}s)")
+    print(f"BFS Path {start_node} -> {goal_node}: {path_bfs} (time: {bfs_time:.6f}s)")
+    print(f"DFS Path {start_node} -> {goal_node}: {path_dfs} (time: {dfs_time:.6f}s)")
     print(f"Topological Sort Order: {topo_order} (time: {topo_time:.6f}s)")
 
 def run_weighted():
     print("\n=== Input Weighted Graph ===")
     graph, edges = input_weighted_graph()
+
+    # Input posisi node (untuk A* dan GBFS)
+    positions = input_node_positions(graph.keys())
+
+    # Input titik awal/tujuan
     prim_start = input("Start node for Prim: ")
     astar_start = input("Start node for A*: ")
     astar_goal = input("Goal node for A*: ")
+    dijkstra_start = input("Start node for Dijkstra: ")
+    dijkstra_goal = input("Goal node for Dijkstra: ")
+    gbfs_start = input("Start node for GBFS: ")
+    gbfs_goal = input("Goal node for GBFS: ")
 
-    # Input node positions (for A*)
-    positions = input_node_positions(graph.keys())
-
-    # Run Prim
+    # Prim
     start = time.time()
     prim_result = prim.prim(graph, prim_start)
-
     prim_time = time.time() - start
 
-    # Run Kruskal
+    # Kruskal
     start = time.time()
     nodes = list(graph.keys())
     kruskal_result = kruskal(nodes, edges)
     kruskal_time = time.time() - start
 
-    # Run A*
+    # A*
     start = time.time()
-    astar_path, astar_cost = astar(graph, astar_start, astar_goal, positions)
+    path_astar, cost_astar = astar(graph, astar_start, astar_goal, positions)
     astar_time = time.time() - start
+
+    # Dijkstra
+    start = time.time()
+    path_dijkstra, cost_dijkstra = dijkstra(graph, dijkstra_start, dijkstra_goal)
+    dijkstra_time = time.time() - start
+
+    # GBFS
+    start = time.time()
+    path_gbfs = gbfs(graph, gbfs_start, gbfs_goal, positions)
+    gbfs_time = time.time() - start
 
     # Output
     print("\n--- Result for Weighted Graph ---")
     print(f"Prim MST from {prim_start}: {prim_result} (time: {prim_time:.6f}s)")
     print(f"Kruskal MST: {kruskal_result} (time: {kruskal_time:.6f}s)")
-    print(f"A* Path {astar_start} -> {astar_goal}: {astar_path} (cost: {astar_cost}, time: {astar_time:.6f}s)")
-
-# --- MAIN MENU ---
+    print(f"A* Path {astar_start} -> {astar_goal}: {path_astar} (cost: {cost_astar}, time: {astar_time:.6f}s)")
+    print(f"Dijkstra Path {dijkstra_start} -> {dijkstra_goal}: {path_dijkstra} (cost: {cost_dijkstra}, time: {dijkstra_time:.6f}s)")
+    print(f"GBFS Path {gbfs_start} -> {gbfs_goal}: {path_gbfs} (time: {gbfs_time:.6f}s)")
 
 def main():
     print("=== Graph Algorithm Comparison ===")
-    print("1. Unweighted Graph (BFS & Topological Sort)")
-    print("2. Weighted Graph (Prim, Kruskal & A*)")
+    print("1. Unweighted Graph (BFS, DFS, Topological Sort)")
+    print("2. Weighted Graph (Prim, Kruskal, A*, Dijkstra, GBFS)")
     choice = input("Choose graph type [1/2]: ")
 
     if choice == '1':
@@ -109,8 +133,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
 
 '''
 ==================OPSI TAMBAHAN FITUR=========================
