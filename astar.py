@@ -2,7 +2,6 @@ import heapq
 import math
 
 def heuristic(a, b, positions):
-    # Menggunakan Euclidean distance sebagai heuristic
     x1, y1 = positions[a]
     x2, y2 = positions[b]
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
